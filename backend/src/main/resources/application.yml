@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  shutdown: graceful
+spring:
+  application:
+    name: review-insights
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+app:
+  yandex:
+    base-url: https://ai.api.cloud.yandex.net/v1
+    api-key: ${YANDEX_API_KEY:}
+    project-id: ${YANDEX_PROJECT_ID:b1gfj3v8keh3qobuh6rv}
+    prompt-id: ${YANDEX_AGENT_PROMPT_ID:fvt526o3mhjmd9f6l2te}
+    timeout: 45s
+resilience4j:
+  circuitbreaker:
+    instances:
+      yandexAgent:
+        sliding-window-size: 10
+        minimum-number-of-calls: 4
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 20s
+  retry:
+    instances:
+      yandexAgent:
+        max-attempts: 2
+        wait-duration: 500ms
+logging:
+  level:
+    root: INFO
+    ru.otzovisvoi: INFO

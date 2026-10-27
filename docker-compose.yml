@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: otzovi-svoi-backend
+    environment:
+      YANDEX_API_KEY: ${YANDEX_API_KEY:?Укажите YANDEX_API_KEY в .env}
+      YANDEX_PROJECT_ID: ${YANDEX_PROJECT_ID:-b1gfj3v8keh3qobuh6rv}
+      YANDEX_AGENT_PROMPT_ID: ${YANDEX_AGENT_PROMPT_ID:-fvt526o3mhjmd9f6l2te}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+    container_name: otzovi-svoi-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    restart: unless-stopped
